@@ -1,5 +1,5 @@
 name: gitlab
-version: 0.0.0
+version: 0.0.1
 synopsis: Haskell interface to GitLab API
 description: Haskell interface to GitLab API
 homepage: https://github.com/maoe/gitlab
@@ -37,7 +37,7 @@ library
     GitLab.Rest
     GitLab.Util
   build-depends:
-        base >= 4.6 && < 4.7
+        base >= 4.6 && < 4.10
       , aeson
       , bytestring
       , conduit
