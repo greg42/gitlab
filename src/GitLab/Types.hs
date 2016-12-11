@@ -297,7 +297,6 @@ data CurrentUser = CurrentUser
   { currentUser :: User
   , currentUserIsAdmin :: Bool
   , currentUserCanCreateGroup :: Bool
-  , currentUserCanCreateTeam :: Bool
   , currentUserCanCreateProject :: Bool
   } deriving Show
 
@@ -422,7 +421,6 @@ instance ToJSON CurrentUser where
   toJSON CurrentUser {..} = toJSON currentUser & _Object
     %~ HM.insert "is_admin" (toJSON currentUserIsAdmin)
     . HM.insert "can_create_group" (toJSON currentUserCanCreateGroup)
-    . HM.insert "can_create_team" (toJSON currentUserCanCreateTeam)
     . HM.insert "can_create_project" (toJSON currentUserCanCreateProject)
 
 instance FromJSON CurrentUser where
@@ -430,7 +428,6 @@ instance FromJSON CurrentUser where
     currentUser <- parseJSON obj
     currentUserIsAdmin <- v .: "is_admin"
     currentUserCanCreateGroup <- v .: "can_create_group"
-    currentUserCanCreateTeam <- v .: "can_create_team"
     currentUserCanCreateProject <- v .: "can_create_project"
     return CurrentUser {..}
   parseJSON _ = mzero
