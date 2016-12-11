@@ -7,12 +7,13 @@ import qualified Data.Text.Encoding as TE
 import Data.Conduit
 import Network.HTTP.Conduit
 import Web.PathPieces (toPathPiece)
+import Control.Monad.Trans.Resource
 
 import GitLab.Rest (rest, restSource)
 import GitLab.Types
 
 listProjectSnippets
-  :: (MonadBaseControl IO m, MonadResource m)
+  :: (MonadResource m)
   => ProjectId
   -> Source (GitLabT m) Snippet
 listProjectSnippets projId = restSource $ \request -> request

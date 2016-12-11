@@ -11,6 +11,7 @@ import Data.Conduit
 import Network.HTTP.Conduit
 import Web.PathPieces (toPathPiece)
 import qualified Data.Aeson as A
+import Control.Monad.Trans.Resource
 
 import GitLab.Types
 import GitLab.Rest (rest, restSource)
@@ -31,7 +32,7 @@ data UserParams = UserParams
   }
 
 listUsers
-  :: (MonadBaseControl IO m, MonadResource m)
+  :: (MonadResource m)
   => Source (GitLabT m) User
 listUsers = restSource $ \request -> request
   { path = "/users"
@@ -93,7 +94,7 @@ data SshKeyParams = SshKeyParams
   }
 
 listSshKeys
-  :: (MonadBaseControl IO m, MonadResource m)
+  :: (MonadResource m)
   => Source (GitLabT m) SshKey
 listSshKeys = restSource $ \request -> request
   { path = "/user/keys"

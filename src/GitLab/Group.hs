@@ -7,12 +7,13 @@ import qualified Data.Text.Encoding as TE
 import Data.Conduit
 import Network.HTTP.Conduit
 import Web.PathPieces (toPathPiece)
+import Control.Monad.Trans.Resource
 
 import GitLab.Types
 import GitLab.Rest (rest, restSource)
 
 listGroups
-  :: (MonadBaseControl IO m, MonadResource m)
+  :: (MonadResource m)
   => Source (GitLabT m) Group
 listGroups = restSource $ \request -> request
   { path = "/groups"
@@ -28,7 +29,7 @@ getGroup grpId = rest $ \request -> request
   }
 
 listGroupMembers
-  :: (MonadBaseControl IO m, MonadResource m)
+  :: (MonadResource m)
   => GroupId
   -> Source (GitLabT m) GroupMember
 listGroupMembers grpId = restSource $ \request -> request

@@ -23,7 +23,9 @@ import Data.Conduit
 import Network.HTTP.Conduit
 import Network.HTTP.Types
 import Web.PathPieces (toPathPiece)
+import Control.Monad.Trans.Resource
 import qualified Data.Conduit.List as CL
+import Data.Default (def)
 
 import GitLab.Monad
 
@@ -42,7 +44,7 @@ rest ::
   , Show a
 #endif
   )
-  => (Request (GitLabT m) -> Request (GitLabT m))
+  => (Request -> Request)
   -> GitLabT m (Maybe a)
 rest f = do
   GitLabConfig {..} <- ask
@@ -64,13 +66,12 @@ restSource ::
   forall m a.
 #endif
   ( FromJSON a
-  , MonadBaseControl IO m
   , MonadResource m
 #ifdef DEBUG
   , Show a
 #endif
   )
-  => (Request (GitLabT m) -> Request (GitLabT m))
+  => (Request -> Request)
   -> Source (GitLabT m) a
 restSource f = loop 1
   where
@@ -104,15 +105,15 @@ restSource f = loop 1
             NoPagination -> return ()
             PaginateBy n -> when (numEntities == n) $ loop $ page + 1
 
-modifyPath :: Request m -> Request m
+modifyPath :: Request -> Request
 modifyPath request = request
   { path = "/api/v3" <> path request
   }
 
 auth
   :: Monad m
-  => Request (GitLabT m)
-  -> GitLabT m (Request (GitLabT m))
+  => Request 
+  -> GitLabT m (Request)
 auth request = do
   privToken <- asks (credsPrivateToken . gitLabCreds)
   let privateTokenHeader = ("PRIVATE-TOKEN", privToken)

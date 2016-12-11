@@ -76,12 +76,12 @@ module GitLab.Types
 import Control.Applicative (Applicative(..), Alternative(..))
 import Control.Monad (mzero)
 import Data.Text (Text)
-import Data.Time (Day, UTCTime, formatTime, parseTime)
-import System.Locale (defaultTimeLocale)
+import Data.Time (Day, UTCTime, parseTimeM)
+import Data.Time.Format (defaultTimeLocale)
 import qualified Data.Text as T
 
 import Control.Lens ((&), (%~))
-import Control.Lens.Aeson (_Object)
+import Data.Aeson.Lens (_Object)
 import Data.Aeson
 import Data.Aeson.TH
 import Data.Aeson.Types (typeMismatch)
@@ -443,21 +443,12 @@ instance FromJSON Iso8601Time where
     tryFormats alternateFormats <|> fail "could not parse ISO-8601 date"
     where
       tryFormat f =
-        case parseTime defaultTimeLocale f (T.unpack t) of
+        case parseTimeM True defaultTimeLocale f (T.unpack t) of
           Just d -> pure $ Iso8601Time d
           Nothing -> empty
       tryFormats = foldr1 (<|>) . map tryFormat
       alternateFormats = ["%FT%T%QZ", "%FT%T%Q%z"]
   parseJSON v = typeMismatch "UTCTime" v
-
-instance ToJSON Day where
-  toJSON = toJSON . formatTime defaultTimeLocale "%F"
-
-instance FromJSON Day where
-  parseJSON = withText "Day" $ \t ->
-    case parseTime defaultTimeLocale "%F" (T.unpack t) of
-      Just d -> pure d
-      Nothing -> empty
 
 -----------------------------------------------------------
 -- Aeson derived instances

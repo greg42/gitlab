@@ -7,12 +7,13 @@ import qualified Data.Text.Encoding as TE
 import Data.Conduit
 import Network.HTTP.Conduit
 import Web.PathPieces (toPathPiece)
+import Control.Monad.Trans.Resource
 
 import GitLab.Rest (restSource)
 import GitLab.Types
 
 listBranches
-  :: (MonadBaseControl IO m, MonadResource m)
+  :: (MonadResource m)
   => ProjectId
   -> Source (GitLabT m) Branch
 listBranches projId = restSource $ \request -> request
@@ -24,7 +25,7 @@ listBranches projId = restSource $ \request -> request
   }
 
 listTags
-  :: (MonadBaseControl IO m, MonadResource m)
+  :: (MonadResource m)
   => ProjectId
   -> Source (GitLabT m) Tag
 listTags projId = restSource $ \request -> request
@@ -36,7 +37,7 @@ listTags projId = restSource $ \request -> request
   }
 
 listCommits
-  :: (MonadBaseControl IO m, MonadResource m)
+  :: (MonadResource m)
   => ProjectId
   -> Source (GitLabT m) RepositoryCommit
 listCommits projId = restSource $ \request -> request
@@ -48,7 +49,7 @@ listCommits projId = restSource $ \request -> request
   }
 
 listRepositoryTree
-	:: (MonadBaseControl IO m, MonadResource m)
+   :: (MonadResource m)
   => ProjectId
   -> Source (GitLabT m) RepositoryTree
 listRepositoryTree projId = restSource $ \request -> request

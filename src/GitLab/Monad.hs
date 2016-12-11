@@ -22,18 +22,21 @@ module GitLab.Monad
 
 import Control.Applicative (Applicative)
 import Control.Monad.Reader
+import Control.Monad.Trans.Resource
 import Data.ByteString (ByteString)
 
-import Control.Monad.Base (MonadBase(..))
+import Control.Monad.Base (MonadBase(..), liftBase)
 import Control.Monad.Trans.Control
-import Data.Conduit
 import qualified Network.HTTP.Conduit as HC
+
+instance (MonadBaseControl IO m) => MonadBase IO (GitLabT m) where
+     liftBase = GitLabT . liftBase
 
 newtype GitLabT m a = GitLabT { unGitLabT :: ReaderT GitLabConfig m a }
   deriving
     ( Functor, Applicative, Monad, MonadIO
     , MonadReader GitLabConfig
-    , MonadResource, MonadThrow
+    ,  MonadThrow
     , MonadTrans
     )
 
@@ -41,14 +44,14 @@ instance MonadBase b m => MonadBase b (GitLabT m) where
   liftBase = lift . liftBase
 
 instance MonadTransControl GitLabT where
-  newtype StT GitLabT a = StT { unStT :: StT (ReaderT GitLabConfig) a }
-  liftWith f = GitLabT $ liftWith (\run -> f (liftM StT . run . unGitLabT))
-  restoreT = GitLabT . restoreT . liftM unStT
+  type StT GitLabT a = StT (ReaderT GitLabConfig) a
+  liftWith f = GitLabT $ liftWith (\run -> f (run . unGitLabT))
+  restoreT = GitLabT . restoreT
 
 instance MonadBaseControl b m => MonadBaseControl b (GitLabT m) where
-  newtype StM (GitLabT m) a = StMT { unStMT :: ComposeSt GitLabT m a }
-  liftBaseWith = defaultLiftBaseWith StMT
-  restoreM = defaultRestoreM unStMT
+  type StM (GitLabT m) a = ComposeSt GitLabT m a
+  liftBaseWith = defaultLiftBaseWith 
+  restoreM = defaultRestoreM 
 
 -- | Configurations to access to GitLab API
 data GitLabConfig = GitLabConfig

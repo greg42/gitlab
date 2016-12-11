@@ -7,12 +7,13 @@ import qualified Data.Text.Encoding as TE
 import Data.Conduit
 import Network.HTTP.Conduit
 import Web.PathPieces (toPathPiece)
+import Control.Monad.Trans.Resource
 
 import GitLab.Rest (rest, restSource)
 import GitLab.Types
 
 listProjects
-  :: (MonadBaseControl IO m, MonadResource m)
+  :: (MonadResource m)
   => Source (GitLabT m) Project
 listProjects = restSource $ \request -> request
   { path = "/projects"
@@ -27,7 +28,7 @@ getProject projId = rest $ \request -> request
   }
 
 listProjectMembers
-  :: (MonadBaseControl IO m, MonadResource m)
+  :: (MonadResource m)
   => ProjectId
   -> Source (GitLabT m) ProjectMember
 listProjectMembers projId = restSource $ \request -> request
@@ -39,7 +40,7 @@ listProjectMembers projId = restSource $ \request -> request
   }
 
 listProjectHooks
-  :: (MonadBaseControl IO m, MonadResource m)
+  :: (MonadResource m)
   => ProjectId
   -> Source (GitLabT m) ProjectHook
 listProjectHooks projId = restSource $ \request -> request
@@ -51,7 +52,7 @@ listProjectHooks projId = restSource $ \request -> request
   }
 
 listProjectEvents
-  :: (MonadBaseControl IO m, MonadResource m)
+  :: (MonadResource m)
   => ProjectId
   -> Source (GitLabT m) ProjectEvent
 listProjectEvents projId = restSource $ \request -> request

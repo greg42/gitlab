@@ -7,12 +7,13 @@ import qualified Data.Text.Encoding as TE
 import Data.Conduit
 import Network.HTTP.Conduit
 import Web.PathPieces (toPathPiece)
+import Control.Monad.Trans.Resource
 
 import GitLab.Rest (restSource)
 import GitLab.Types
 
 listMergeRequests
-  :: (MonadBaseControl IO m, MonadResource m)
+  :: (MonadResource m)
   => ProjectId
   -> Source (GitLabT m) MergeRequest
 listMergeRequests projId = restSource $ \request -> request
