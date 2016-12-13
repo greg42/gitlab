@@ -114,7 +114,7 @@ data Project = Project
 
   , projectIssuesEnabled :: Bool
   , projectMergeRequestsEnabled :: Bool
-  , projectWallEnabled :: Bool
+  , projectWallEnabled :: Maybe Bool
   , projectWikiEnabled :: Bool
   , projectSnippetsEnabled :: Bool
 
@@ -279,10 +279,10 @@ data User = User
 data SimpleUser = SimpleUser
   { simpleUserId :: UserId
   , simpleUserUsername :: Text
-  , simpleUserEmail :: Text
+  , simpleUserEmail :: Maybe Text
   , simpleUserName :: Text
   , simpleUserState :: UserState
-  , simpleUserCreatedAt :: UTCTime
+  , simpleUserCreatedAt :: Maybe UTCTime
   } deriving Show
 
 newtype UserId = UserId Int deriving (Show, Num, PathPiece)
