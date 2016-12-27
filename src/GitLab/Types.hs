@@ -105,7 +105,7 @@ data Project = Project
   , projectPathWithNamespace :: Text
 
   , projectDefaultBranch :: Maybe Text
-  , projectOwner :: SimpleUser
+  , projectOwner :: Maybe SimpleUser
   , projectPublic :: Bool
 
   , projectWebUrl :: Text
