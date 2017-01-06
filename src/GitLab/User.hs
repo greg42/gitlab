@@ -55,6 +55,7 @@ createUser params = rest $ \request -> request
   { method = "POST"
   , path = "/users"
   , requestBody = RequestBodyLBS $ A.encode params
+  , requestHeaders = [("Content-Type", "application/json")]
   }
 
 modifyUser
@@ -117,6 +118,7 @@ addSshKey params = rest $ \request -> request
   { method = "POST"
   , path = "/user/keys"
   , requestBody = RequestBodyLBS $ A.encode params
+  , requestHeaders = [("Content-Type", "application/json")]
   }
 
 addSshKeyForUser

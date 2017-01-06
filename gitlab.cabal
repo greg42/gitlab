@@ -14,7 +14,7 @@ cabal-version: >= 1.10
 
 flag debug
   description: Enable debug output
-  default: False
+  default: True
 
 library
   exposed-modules:

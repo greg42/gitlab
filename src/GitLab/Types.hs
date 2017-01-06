@@ -9,7 +9,7 @@ module GitLab.Types
 
   -- * Projects
   , Project(..)
-  , ProjectId
+  , ProjectId(..)
   , Namespace(..)
   , NamespaceId
   , ProjectMember(..)
@@ -32,6 +32,10 @@ module GitLab.Types
   , RepositoryCommit(..)
   , CommitDiff(..)
   , RepositoryTree(..)
+  , CommitAction(..)
+  , CommitActionType(..)
+  , CommitActionEncoding(..)
+  , SendCommit(..)
 
   -- * Deploy Keys
   , DeployKey(..)
@@ -243,6 +247,30 @@ data RepositoryTree = RepositoryTree
   , repositoryTreeType :: Text
   , repositoryTreeMode :: Text
   } deriving Show
+
+data CommitActionType = ActionCreate
+                      | ActionDelete
+                      | ActionMove
+                      | ActionUpdate
+                      deriving Show
+
+data CommitActionEncoding = EncodingText
+                          | EncodingBase64
+                          deriving Show
+
+data CommitAction = CommitAction 
+  { commitActionAction       :: CommitActionType
+  , commitActionFilePath     :: FilePath
+  , commitActionContent      :: Maybe Text
+  , commitActionPreviousPath :: Maybe FilePath
+  , commitActionEncoding     :: Maybe CommitActionEncoding
+  } deriving (Show)
+
+data SendCommit = SendCommit
+  { sendCommitBranchName    :: Text
+  , sendCommitCommitMessage :: Text
+  , sendCommitActions       :: [CommitAction]
+  } deriving (Show)
 
 -----------------------------------------------------------
 -- Deploy Keys
@@ -521,6 +549,24 @@ deriveJSON defaultOptions
 deriveJSON defaultOptions
   { fieldLabelModifier = camelToSnake . dropPrefix "repositoryTree" }
   ''RepositoryTree
+
+deriveJSON defaultOptions
+  { constructorTagModifier = camelToSnake . dropPrefix "Action" }
+  ''CommitActionType
+
+deriveJSON defaultOptions
+  { constructorTagModifier = camelToSnake . dropPrefix "Encoding" }
+  ''CommitActionEncoding
+
+deriveJSON defaultOptions
+  { fieldLabelModifier = camelToSnake . dropPrefix "commitAction",
+    omitNothingFields = True }
+  ''CommitAction
+
+deriveJSON defaultOptions
+  { fieldLabelModifier = camelToSnake . dropPrefix "sendCommit",
+    omitNothingFields = True }
+  ''SendCommit
 
 -- Deploy Key
 
