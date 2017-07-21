@@ -48,7 +48,7 @@ rest ::
   -> GitLabT m (Maybe a)
 rest f = do
   GitLabConfig {..} <- ask
-  request <- auth . modifyPath . f $ def
+  request <- auth . modifyPath . f $ defaultRequest
     { secure = gitLabSecure
     , host = gitLabHost
     , port = gitLabPort
@@ -77,7 +77,7 @@ restSource f = loop 1
   where
     loop !page = do
       GitLabConfig {..} <- lift ask
-      request <- lift . auth . modifyPath . f $ def
+      request <- lift . auth . modifyPath . f $ defaultRequest
         { method = "GET"
         , secure = gitLabSecure
         , host = gitLabHost
